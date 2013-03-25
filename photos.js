@@ -14,6 +14,13 @@ var setupPhotos = (function ($) {
         });
     }
 
+    function getItem (key) {
+        return window.localStorage.getItem(key);
+    }
+    function setItem (key, value) {
+        window.localStorage.setItem(key,value);
+    }
+
     function loadPhotosByTag (tag, max, callback) {
         var photos = [];
         var callback_name = 'callback_' + Math.floor(Math.random() * 100000);
@@ -61,6 +68,32 @@ var setupPhotos = (function ($) {
         return img;
     }
 
+    function favAppender (elm,img) {
+
+        var fav = document.createElement('div');
+        fav.className = 'fav';
+        if (window.localStorage.getItem(img.src) === 'true') {
+            fav.className = fav.className + ' icon-heart';
+        } else {
+            fav.className = fav.className + ' icon-heart-empty';
+            //window.localStorage.setItem(img.src,'false');
+            //only remember the ones that were mark as favourite
+        }
+        fav.onclick = function() {
+            key = this.parentElement.firstElementChild.src;
+            // toogle
+            if (getItem(key) === 'true') {
+                setItem(key,'false');
+                fav.className = 'fav icon-heart-empty';
+            } else{
+                setItem(key,'true');
+                fav.className = 'fav icon-heart';
+            }
+        };
+        elm.appendChild(fav);
+
+    }
+
     function imageAppender (id) {
         var holder = document.getElementById(id);
         return function (img) {
@@ -68,17 +101,20 @@ var setupPhotos = (function ($) {
             elm.className = 'photo';
             elm.appendChild(img);
             holder.appendChild(elm);
+            //adding the fav functionality 
+            favAppender(elm, img);
         };
     }
 
     // ----
-    
     var max_per_tag = 5;
     return function setup (tags, callback) {
         loadAllPhotos(tags, max_per_tag, function (err, items) {
             if (err) { return callback(err); }
 
             each(items.map(renderPhoto), imageAppender('photos'));
+
+
             callback();
         });
     };

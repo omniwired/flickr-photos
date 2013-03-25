@@ -1,22 +1,32 @@
 body {
     font: 16px/1 Helvetica, sans-serif;
 }
-
+h1 {
+	text-align: center;
+}
 
 #photos {
-    float: left;
-    width: 100%;
+    width: 64%;
+margin-left: auto;
+text-align: center;
+margin-right: auto;
 }
 
 .photo {
     float: left;
     margin: 0 2px 2px 0;
     overflow: hidden;
-    height: 160px;
+ /*   height: 160px;*/
 }
 
-.photo,
+/*.photo,
 .photo img {
     min-width: 160px;
     max-width: 240px;
+}*/
+.photo .fav {
+	position: relative;
+	bottom: 10px;
+	z-index: 1;
+	right: 30px;
 }
