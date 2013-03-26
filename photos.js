@@ -1,5 +1,6 @@
 /*global jQuery*/
 
+var cookie_name = 'favs';
 var setupPhotos = (function ($) {
     function each (items, callback) {
         var i;
@@ -14,11 +15,33 @@ var setupPhotos = (function ($) {
         });
     }
 
+    function buildDicFromCookie () {
+
+        var data = new RegExp('(?:^|; )' + cookie_name + '=([^;]*)').exec(document.cookie);
+        var dic;
+        if (data === null) { // didn't find the regexp
+            dic = {};
+        } else {
+            dic = JSON.parse(data[1]);
+        }
+        return dic;
+    }
+
     function getItem (key) {
-        return window.localStorage.getItem(key);
+
+        var encoded_key = encodeURIComponent(key);
+        var dic = buildDicFromCookie();
+        return dic[encoded_key];
+
     }
     function setItem (key, value) {
-        window.localStorage.setItem(key,value);
+
+        var encoded_key = encodeURIComponent(key);
+        var dic = buildDicFromCookie();
+
+        dic[encoded_key] = value;
+        document.cookie = cookie_name + '=' + JSON.stringify(dic);
+
     }
 
     function loadPhotosByTag (tag, max, callback) {
@@ -72,7 +95,7 @@ var setupPhotos = (function ($) {
 
         var fav = document.createElement('div');
         fav.className = 'fav';
-        if (window.localStorage.getItem(img.src) === 'true') {
+        if (getItem(img.src) === 'true') {
             fav.className = fav.className + ' icon-heart';
         } else {
             fav.className = fav.className + ' icon-heart-empty';
